@@ -7,14 +7,14 @@ class Accueil extends StatefulWidget {
   _AccueilState createState() => _AccueilState();
 }
 
-
 class Results extends StatelessWidget {
   final List<String> values;
 
   Results(this.values);
 
   Widget _buildCircle(String value, BuildContext context, Color color) {
-    double size = MediaQuery.of(context).size.shortestSide / 100 * 80 / (values.length / 2);
+    double size = MediaQuery.of(context).size.shortestSide / (values.length / 2.5);
+
     return Container(
       margin: EdgeInsets.all(size / 10),
       width: size,
@@ -34,29 +34,28 @@ class Results extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Diviser la liste en deux sous-listes pour deux lignes
-    var halfLength = (values.length / 2).ceil();
-    var firstRowValues = values.sublist(0, halfLength);
-    var secondRowValues = values.sublist(halfLength);
+    var quarterLength = (values.length / 4).ceil();
+    var firstRowValues = values.sublist(0, quarterLength);
+    var secondRowValues = values.sublist(quarterLength, 2 * quarterLength);
+    var thirdRowValues = values.sublist(2 * quarterLength, 3 * quarterLength);
+    var fourthRowValues = values.getRange(3 * quarterLength, values.length).toList();
 
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: firstRowValues.map((value) => _buildCircle(value,
-                                                                context,
-                                                                Colors.orange)).toList(),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: secondRowValues.map((value) => _buildCircle(value,
-                                                                context,
-                                                                Colors.orange)).toList(),
-        ),
+        _buildRow(firstRowValues, context),
+        _buildRow(secondRowValues, context),
+        _buildRow(thirdRowValues, context),
+        _buildRow(fourthRowValues, context),
       ],
     );
   }
 
+  Widget _buildRow(List<String> rowValues, BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: rowValues.map((value) => _buildCircle(value, context, Colors.orange)).toList(),
+    );
+  }
 }
 
 class _AccueilState extends State<Accueil> {
@@ -90,7 +89,7 @@ class _AccueilState extends State<Accueil> {
     elements = document.getElementsByClassName("result-full__drawing-time");
     String newPeriodInDay = elements.isNotEmpty ? elements.first.text.trim() : "";
     newPeriodInDay = newPeriodInDay.split(" ")[2];
-    
+
     elements = document.getElementsByClassName("fdj Title");
     String newDate = elements.isNotEmpty ? elements.first.text.trim() : "";
 
@@ -106,15 +105,15 @@ class _AccueilState extends State<Accueil> {
   }
 
   Widget _Multiplicator(BuildContext context, String multiplicator) {
+    double size = MediaQuery.of(context).size.shortestSide / 100 * 80 / (values.length / 2);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Multiplicateur :",
-      style: TextStyle(fontSize: MediaQuery.of(context).size.shortestSide/30)),
+        Text("Multiplicateur :", style: TextStyle(fontSize: MediaQuery.of(context).size.height / 60)),
         Container(
-          margin: EdgeInsets.all(MediaQuery.of(context).size.shortestSide / 100 * 10 / (values.length / 2)),
-          width: MediaQuery.of(context).size.shortestSide / 100 * 80 / (values.length / 2),
-          height: MediaQuery.of(context).size.shortestSide / 100 * 80 / (values.length / 2),
+          margin: EdgeInsets.all(size / 10),
+          width: size,
+          height: size,
           decoration: BoxDecoration(
             color: Colors.blueAccent,
             shape: BoxShape.circle,
@@ -122,8 +121,7 @@ class _AccueilState extends State<Accueil> {
           alignment: Alignment.center,
           child: Text(
             multiplicator,
-            style: TextStyle(color: Colors.white,
-                fontSize: MediaQuery.of(context).size.shortestSide/30),
+            style: TextStyle(color: Colors.white, fontSize: MediaQuery.of(context).size.shortestSide / 30),
             textAlign: TextAlign.center,
           ),
         )
@@ -136,22 +134,24 @@ class _AccueilState extends State<Accueil> {
     return Scaffold(
       body: Center(
         child: Column(
-
           children: [
-            Padding(padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).size.height/5,
-                top: MediaQuery.of(context).size.height/8),
-            child: Text(
-              'Bienvenue sur Keliano!',
-              style: TextStyle(fontSize: MediaQuery.of(context).size.shortestSide/20),
-            )
-            )
-            ,
+            Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).size.height / 8,
+                    top: MediaQuery.of(context).size.height / 12),
+                child: Text(
+                  'Bienvenue sur Keliano!',
+                  style: TextStyle(fontSize: MediaQuery.of(context).size.height / 40),
+                )
+            ),
             Text('Résultat du ' + date,
-                style: TextStyle(fontSize: MediaQuery.of(context).size.shortestSide/30)),
+                style: TextStyle(fontSize: MediaQuery.of(context).size.height / 60)),
             Text('Tirage du ' + periodInDay,
-                style: TextStyle(fontSize: MediaQuery.of(context).size.shortestSide/30)),
-            _Multiplicator(context, multiplicator),
+                style: TextStyle(fontSize: MediaQuery.of(context).size.height / 60)),
+            Padding(
+              padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height / 16),
+              child: _Multiplicator(context, multiplicator),
+            ),
             Results(values),
           ],
         ),
