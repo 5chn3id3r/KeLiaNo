@@ -14,10 +14,11 @@ class Results extends StatelessWidget {
   Results(this.values);
 
   Widget _buildCircle(String value, BuildContext context, Color color) {
+    double size = MediaQuery.of(context).size.shortestSide / 100 * 80 / (values.length / 2);
     return Container(
-      margin: EdgeInsets.all(MediaQuery.of(context).size.width/100*10/(values.length/2)),
-      width: MediaQuery.of(context).size.width/100*80/(values.length/2),
-      height: MediaQuery.of(context).size.width/100*80/(values.length/2),
+      margin: EdgeInsets.all(size / 10),
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         color: color,
         shape: BoxShape.circle,
