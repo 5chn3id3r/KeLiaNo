@@ -1,18 +1,25 @@
+import 'dart:io';
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:archive/archive.dart';
 import 'widgets/accueil.dart';
 import 'widgets/historic.dart';
 import 'widgets/statistics.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
-  static const appTitle = 'Drawer Demo';
+  static const appTitle = 'Keno';
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: appTitle,
       home: MyHomePage(title: appTitle),
     );
@@ -20,7 +27,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -30,13 +37,52 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
     Accueil(),
     Historic(),
     Statistics(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _downloadAndExtractZip();
+  }
+
+  Future<void> _downloadAndExtractZip() async {
+    final String zipUrl = 'https://media.fdj.fr/static-draws/csv/keno/keno_202010.zip';
+    final String zipPath = (await getTemporaryDirectory()).path + '/keno_202010.zip';
+
+    try {
+      // Télécharge le fichier zip
+      await _downloadFile(zipUrl, zipPath);
+
+      // Extrait le fichier zip
+      await _extractZip(zipPath, (await getTemporaryDirectory()).path);
+    } catch (e) {
+      print('Erreur lors du téléchargement ou de l\'extraction du fichier zip : $e');
+    }
+  }
+
+  Future<void> _downloadFile(String url, String destinationPath) async {
+    final http.Response response = await http.get(Uri.parse(url));
+    await File(destinationPath).writeAsBytes(response.bodyBytes);
+  }
+
+  Future<void> _extractZip(String zipFilePath, String destinationPath) async {
+    final bytes = File(zipFilePath).readAsBytesSync();
+    final archive = ZipDecoder().decodeBytes(bytes);
+
+    for (final file in archive) {
+      final fileName = '$destinationPath/${file.name}';
+      if (file.isFile) {
+        final data = file.content as List<int>;
+        await File(fileName).writeAsBytes(data, flush: true);
+      } else {
+        await Directory(fileName).create(recursive: true);
+      }
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -59,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
-              child: Text('Drawer Header'),
+              child: Text('Menu'),
             ),
             ListTile(
               title: const Text('Accueil'),
