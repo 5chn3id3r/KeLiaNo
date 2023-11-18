@@ -11,14 +11,27 @@ void makeRequest() async{
   }
 }
 
-void getValues() async{
-  var response = await http.get(Uri.parse('https://www.fdj.fr/jeux-de-tirage/keno/resultats'));
-  final document = parser.parse(response.body);
-  final elements = document.getElementsByClassName("result-full__list-item");
-  print(elements);
-}
 
 class Accueil extends StatelessWidget {
+
+  List<String> values = [];
+
+  Accueil()
+  {
+    scrapPage();
+  }
+
+  void scrapPage() async {
+    var response = await http.get(Uri.parse('https://www.fdj.fr/jeux-de-tirage/keno/resultats'));
+    final document = parser.parse(response.body);
+    final elements = document.getElementsByClassName("result-full__list-item");
+    for (var element in elements) {
+      values.add(element.text.trim());
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -28,7 +41,9 @@ class Accueil extends StatelessWidget {
               'Bienvenue sur l\'application Keno!',
               style: TextStyle(fontSize: 24),
             ),
-            TextButton(onPressed: getValues, child: Text("OUI"))
+            ListView(
+              children: values.map((element) => Text(element)).toList(),
+            )
           ],
         )
       );
