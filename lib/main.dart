@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'widgets/accueil.dart';
 import 'widgets/historic.dart';
 import 'widgets/statistics.dart';
+import 'widgets/settings.dart';
 
 void main() {
   runApp(const MyApp());
@@ -38,6 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Accueil(), // Assurez-vous que ce widget est bien défini
     Historic(), // Assurez-vous que ce widget est bien défini
     Statistics(), // Assurez-vous que ce widget est bien défini
+    Settings(),
   ];
 
   // Méthode pour gérer le changement d'onglet
@@ -67,6 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
             _buildDrawerItem('Accueil', 0),
             _buildDrawerItem('Historique', 1),
             _buildDrawerItem('Statistiques', 2),
+            _buildDrawerItem('Paramètres', 3),
           ],
         ),
       ),

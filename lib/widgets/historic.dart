@@ -33,15 +33,23 @@ class _HistoricState extends State<Historic> {
           return SingleChildScrollView(
             child: Center(
               child: Column(
-                children: snapshot.data!.tirages.asMap().entries.map((entry) {
-                  int index = entry.key;
-                  List<String> tirage = entry.value;
-                  String date = snapshot.data!.dates[index];
-                  String multiplicateur = snapshot.data!.multiplicateurs[index];
-                  String joker = snapshot.data!.jokers[index];
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text('Historique des tirages',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  ...snapshot.data!.tirages.asMap().entries.map((entry) {
+                    int index = entry.key;
+                    List<String> tirage = entry.value;
+                    String date = snapshot.data!.dates[index];
+                    String multiplicateur = snapshot.data!.multiplicateurs[index];
+                    String joker = snapshot.data!.jokers[index];
 
-                  return buildTirageSection(date, tirage, multiplicateur, joker, context);
-                }).toList(),
+                    return buildTirageSection(date, tirage, multiplicateur, joker, context) ?? Container(); // Ajouter un fallback pour null
+                  }).toList(),
+                ],
               ),
             ),
           );
@@ -52,32 +60,45 @@ class _HistoricState extends State<Historic> {
     );
   }
 
+
   Widget buildTirageSection(String date, List<String> tirage, String multiplicateur, String joker, BuildContext context) {
     int groupSize = (tirage.length / 4).ceil(); // Calculer la taille de chaque groupe
 
     return Column(
       children: [
-        Text(
-          capitalizeFirstLetter(date),
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 5),
-        for (int i = 0; i < tirage.length; i += groupSize) // Boucle pour créer quatre lignes
-          buildLigne(
-              tirage.sublist(i, i + groupSize > tirage.length ? tirage.length : i + groupSize),
-              context
+        Card(
+          elevation: 4.0, // Ajoute une petite ombre
+          margin: EdgeInsets.all(10.0), // Marge autour de la carte
+          child: Padding(
+            padding: EdgeInsets.all(10.0), // Espace à l'intérieur de la carte
+            child: Column(
+              children: [
+                Text(
+                  capitalizeFirstLetter(date),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 5),
+                for (int i = 0; i < tirage.length; i += groupSize)
+                  buildLigne(
+                      tirage.sublist(i, i + groupSize > tirage.length ? tirage.length : i + groupSize),
+                      context
+                  ),
+                Text('Multiplicateur: $multiplicateur, Joker: $joker',
+                    style: TextStyle(fontSize: 15)),
+                const SizedBox(height: 10),
+              ],
+            ),
           ),
-        Text('Multiplicateur: $multiplicateur, Joker: $joker',
-    style: TextStyle(fontSize: 20),),
-        const SizedBox(height: 15),
+        ),
         Image.asset('assets/trefle.png',
-        width: MediaQuery.of(context).size.width * 0.1, // 50% de la largeur de l'écran
-        height: MediaQuery.of(context).size.height * 0.1),
-
-        const SizedBox(height: 15),
+            width: MediaQuery.of(context).size.width * 0.1, // 10% de la largeur de l'écran
+            height: MediaQuery.of(context).size.height * 0.1),
+        const SizedBox(height: 10),
       ],
     );
   }
+
+
 
 
 // Utilisez votre fonction `buildLigne` existante ici

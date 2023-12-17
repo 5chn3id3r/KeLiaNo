@@ -30,7 +30,7 @@ class _AccueilState extends State<Accueil> {
           return Center(child: Text('Erreur: ${snapshot.error}'));
         } else if (snapshot.hasData) {
           String dateDisplay = snapshot.data!.dates.isNotEmpty
-              ? capitalizeFirstLetter(snapshot.data!.dates.first.split(' ').skip(1).join('\n'))
+              ? capitalizeFirstLetter(snapshot.data!.dates.first.split(' ').skip(1).join(' '))
               : 'Date non disponible';
 
           List<List<String>> groupedTirages = groupTirages(snapshot.data!.tirages.first, 4);
@@ -42,11 +42,25 @@ class _AccueilState extends State<Accueil> {
           return Center(
             child: Column(
               children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 1.0),  // Ajoutez un peu d'espace autour du titre
+                  child: Text(
+                    'Coucou Mamie, bienvenue sur ton application Keno',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Center(
+                    child:
+                    Image.asset('assets/trefle.png',
+                        width: MediaQuery.of(context).size.width * 0.1, // 10% de la largeur de l'écran
+                        height: MediaQuery.of(context).size.height * 0.1),
+                ),
                 Center(
                   child: Text(
                     dateDisplay,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
                 SizedBox(height: 10),  // Espace ajouté ici
@@ -59,6 +73,7 @@ class _AccueilState extends State<Accueil> {
               ],
             ),
           );
+
         } else {
           return Center(child: Text('Aucune donnée disponible'));
         }

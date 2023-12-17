@@ -3,7 +3,7 @@ import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart';
 
 class DataScrapper {
-  final String url = 'https://www.reducmiz.com/resultat_fdj.php?jeu=keno&nb=100';
+  final String url = 'https://www.reducmiz.com/resultat_fdj.php?jeu=keno&nb=50';
 
   Future<ScrapedData> scrapeData() async {
     try {
